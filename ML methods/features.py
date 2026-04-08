@@ -1,7 +1,7 @@
 """
 features.py
 
-Shared feature engineering utilities for the EWS wheat segmentation project.
+
 Imported by model_rf.py, model_sgd.py, and model_xgb.py.
  
 Features extracted per pixel:
@@ -13,7 +13,7 @@ import cv2
 import numpy as np
 from skimage.feature import local_binary_pattern
 from pathlib import Path
- 
+from typing import Optional , Union
  
 
 # Vegetation indices
@@ -151,15 +151,15 @@ def extract_features(img_rgb: np.ndarray) -> np.ndarray:
     return features
  
  
-# 
+
 # Stratified pixel sampler
-# 
+
  
 def sample_pixels_stratified(
     img_rgb: np.ndarray,
     mask: np.ndarray,
     n_per_class: int = 5000,
-    rng: np.random.Generator | None = None,
+    rng: Optional[np.random.Generator] = None
 ) -> tuple[np.ndarray, np.ndarray]:
     """
     Sample an equal number of wheat (1) and soil (0) pixels from one image.
@@ -206,8 +206,8 @@ def sample_pixels_stratified(
 
  
 def load_image_mask_pair(
-    img_path: str | Path,
-    mask_path: str | Path,
+    img_path: Union[str, Path, None],
+    mask_path: Union[str, Path,None],
 ) -> tuple[np.ndarray, np.ndarray]:
     """
     Load an RGB image and its binary mask from disk.
@@ -238,6 +238,7 @@ def build_training_table(
     n_per_class_per_image: int = 5000,
     seed: int = 42,
 ) -> tuple[np.ndarray, np.ndarray]:
+    
     """
     Build a combined feature matrix and label vector from a list of
     image/mask pairs using stratified sampling.
@@ -252,6 +253,7 @@ def build_training_table(
         X: (N, 13) float32 — stacked features from all images.
         y: (N,)    int8    — stacked labels.
     """
+
     rng = np.random.default_rng(seed)
     X_parts, y_parts = [], []
  

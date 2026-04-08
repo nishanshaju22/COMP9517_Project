@@ -1,14 +1,13 @@
 """
 eval_utils.py
--------------
-Shared evaluation and post-processing utilities for the EWS wheat segmentation project.
+evaluation and post-processing utilities.
 Imported by model_rf.ipynb, model_sgd.ipynb, and model_xgb.ipynb.
 """
  
 import cv2
 import numpy as np
 from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix
- 
+from typing import Optional, Union
  
 
 # Post-processing
@@ -76,7 +75,7 @@ def evaluate(
     y_true: np.ndarray,
     y_pred: np.ndarray,
     apply_cleanup: bool = False,
-    mask_shape: tuple[int, int] | None = None,
+    mask_shape: Optional[tuple[int, int]] = None
 ) -> dict:
     """
     Compute all required project metrics for a single predicted mask.
@@ -178,7 +177,7 @@ def save_mask(mask: np.ndarray, path: str) -> None:
  
  
 
-# Results pretty-printer
+# Results it branch -aprinter
 
  
 def print_metrics(metrics: dict, model_name: str = "Model") -> None:
