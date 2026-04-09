@@ -7,8 +7,12 @@ import os
 import numpy as np
 import torch
 from torchvision import transforms
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 
 IMAGE_SIZE = 350
+IMAGENET_MEAN = (0.485, 0.456, 0.406)
+IMAGENET_STD  = (0.229, 0.224, 0.225)
 
 def get_image_mask_pairs(folder):
 
@@ -31,38 +35,38 @@ def get_image_mask_pairs(folder):
 
     return image_files, mask_files
 
-def mask_transform(mask):
+# def mask_transform(mask):
 
-    mask = mask.resize((IMAGE_SIZE, IMAGE_SIZE))
+#     mask = mask.resize((IMAGE_SIZE, IMAGE_SIZE))
 
-    mask = np.array(mask)
+#     mask = np.array(mask)
 
-    mask = mask / 255
+#     mask = mask / 255
 
-    mask = torch.tensor(mask, dtype=torch.float32)
+#     mask = torch.tensor(mask, dtype=torch.float32)
 
-    return mask.unsqueeze(0)
+#     return mask.unsqueeze(0)
 
-base_transform = transforms.Compose([
-    transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
-    transforms.ToTensor(),
-])
+# base_transform = transforms.Compose([
+#     transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
+#     transforms.ToTensor(),
+# ])
 
-aug_transform = transforms.Compose([
-    transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
+# aug_transform = transforms.Compose([
+#     transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
 
-    transforms.RandomHorizontalFlip(),
-    transforms.RandomVerticalFlip(),
+#     transforms.RandomHorizontalFlip(),
+#     transforms.RandomVerticalFlip(),
 
-    transforms.RandomRotation(20),
+#     transforms.RandomRotation(20),
 
-    transforms.ColorJitter(
-        brightness=0.3,
-        contrast=0.3
-    ),
+#     transforms.ColorJitter(
+#         brightness=0.3,
+#         contrast=0.3
+#     ),
 
-    transforms.ToTensor(),
-])
+#     transforms.ToTensor(),
+# ])
 
 def add_gaussian_noise(image):
 
@@ -112,3 +116,62 @@ def reduce_brightness(image):
     image = image * 0.4
 
     return image
+
+def make_transforms(augment=True, img_size=350):
+
+    val_tf = A.Compose([
+        A.Resize(img_size, img_size),
+
+        A.Normalize(
+            mean=IMAGENET_MEAN,
+            std=IMAGENET_STD
+        ),
+
+        ToTensorV2(),
+    ])
+
+    if not augment:
+        return val_tf, val_tf
+
+    train_tf = A.Compose([
+
+        A.RandomCrop(img_size, img_size),
+
+        A.HorizontalFlip(p=0.5),
+
+        A.VerticalFlip(p=0.3),
+
+        A.Rotate(limit=15, p=0.5),
+
+        A.ColorJitter(
+            brightness=0.3,
+            contrast=0.2,
+            saturation=0.25,
+            hue=0.0,
+            p=0.5
+        ),
+
+        A.GaussNoise(
+            var_limit=(10.0, 40.0),
+            p=0.2
+        ),
+
+        A.GaussianBlur(
+            blur_limit=3,
+            p=0.2
+        ),
+
+        # Upscale trick
+        A.Resize(img_size * 2, img_size * 2),
+
+        A.RandomCrop(img_size, img_size),
+
+        A.Normalize(
+            mean=IMAGENET_MEAN,
+            std=IMAGENET_STD
+        ),
+
+        ToTensorV2(),
+    ])
+
+    return train_tf, val_tf

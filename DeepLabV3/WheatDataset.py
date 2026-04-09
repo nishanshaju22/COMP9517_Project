@@ -1,6 +1,7 @@
 from PIL import Image
 import torch
-from DeepLabV3.transformers import get_image_mask_pairs, mask_transform
+import numpy as np
+from DeepLabV3.transformers import get_image_mask_pairs
 
 class WheatDataset(torch.utils.data.Dataset):
 
@@ -15,16 +16,26 @@ class WheatDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, idx):
 
-        image = Image.open(
-            self.images[idx]
-        ).convert("RGB")
+        image = np.array(
+            Image.open(self.images[idx]).convert("RGB")
+        )
 
-        mask = Image.open(
-            self.masks[idx]
-        ).convert("L")
+        mask = np.array(
+            Image.open(self.masks[idx]).convert("L")
+        )
 
-        image = self.transform(image)
+        mask = (mask > 127).astype(np.uint8)
 
-        mask = mask_transform(mask)
+        if self.transform:
+
+            augmented = self.transform(
+                image=image,
+                mask=mask
+            )
+
+            image = augmented["image"]
+            mask = augmented["mask"]
+
+        mask = mask.unsqueeze(0).float()
 
         return image, mask

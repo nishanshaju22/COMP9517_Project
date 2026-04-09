@@ -61,9 +61,15 @@ def compute_metrics(preds, targets):
     preds = torch.sigmoid(preds)
 
     preds = (preds > 0.5).float()
+    
+    preds = preds.squeeze(1)
+    targets = targets.squeeze(1)
 
-    preds = preds.cpu().numpy().flatten()
-    targets = targets.cpu().numpy().flatten()
+    preds = preds.detach().cpu().numpy().flatten()
+    targets = targets.detach().cpu().numpy().flatten()
+
+    preds = (preds > 0.5).astype(np.uint8)
+    targets = (targets > 0.5).astype(np.uint8)
 
     precision = precision_score(
         targets,
