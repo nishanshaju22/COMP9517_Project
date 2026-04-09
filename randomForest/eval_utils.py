@@ -7,8 +7,8 @@ Imported by model_rf.ipynb, model_sgd.ipynb, and model_xgb.ipynb.
 import cv2
 import numpy as np
 from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix
-from typing import Optional, Union
- 
+from typing import Optional
+from features import extract_features
 
 # Post-processing
 
@@ -164,20 +164,15 @@ def predictions_to_mask(
     """
     return y_pred.reshape(H, W).astype(np.uint8)
  
- 
-def save_mask(mask: np.ndarray, path: str) -> None:
-    """
-    Save a binary mask as a PNG (values scaled to 0/255 for visibility).
- 
-    Args:
-        mask: (H, W) binary uint8 array.
-        path: Output file path (should end in .png).
-    """
-    cv2.imwrite(path, mask * 255)
- 
- 
+def predict_on_image(model, img_rgb, apply_cleanup = False):
+    X = extract_features(img_rgb)
+    y_pred = model.predict(X)
+    mask = predictions_to_mask(y_pred, 350, 350)
+    if apply_cleanup:
+        mask = morphological_cleanup(mask)
+    return mask
 
-# Results it branch -aprinter
+
 
  
 def print_metrics(metrics: dict, model_name: str = "Model") -> None:
