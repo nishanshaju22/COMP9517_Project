@@ -21,7 +21,7 @@ class EWSDataset(Dataset):
         mask_name = img_name.replace(".png", "_mask.png")
 
         image = np.array(Image.open(os.path.join(self.image_dir, img_name)).convert("RGB"))
-        mask  = np.array(Image.open(os.path.join(self.image_dir, mask_name)).convert("L"))
+        mask = np.array(Image.open(os.path.join(self.image_dir, mask_name)).convert("L"))
 
         # Binarise mask: plant=1, soil=0
         mask = (mask > 127).astype(np.float32)
@@ -34,7 +34,7 @@ class EWSDataset(Dataset):
         return image, mask
 
 
-def get_transforms(split="train", img_size=352):
+def get_transforms(split="train", img_size=320):
     """Return augmentation pipeline for each split."""
     if split == "train":
         return A.Compose([
@@ -44,12 +44,12 @@ def get_transforms(split="train", img_size=352):
             A.RandomRotate90(p=0.4),
             A.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.2, p=0.5),
             A.GaussianBlur(blur_limit=(3, 5), p=0.2),
-            A.GaussNoise(var_limit=(10, 50), p=0.2),
+            A.GaussNoise(std_range=(0.1, 0.2), p=0.2),
             A.Normalize(mean=[0.485, 0.456, 0.406],
                         std=[0.229, 0.224, 0.225]),
             ToTensorV2(),
         ])
-    else:  # val / test — no augmentation except resize + normalise
+    else:
         return A.Compose([
             A.PadIfNeeded(img_size, img_size, border_mode=0),
             A.CenterCrop(img_size, img_size),
