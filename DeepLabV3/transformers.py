@@ -35,39 +35,6 @@ def get_image_mask_pairs(folder):
 
     return image_files, mask_files
 
-# def mask_transform(mask):
-
-#     mask = mask.resize((IMAGE_SIZE, IMAGE_SIZE))
-
-#     mask = np.array(mask)
-
-#     mask = mask / 255
-
-#     mask = torch.tensor(mask, dtype=torch.float32)
-
-#     return mask.unsqueeze(0)
-
-# base_transform = transforms.Compose([
-#     transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
-#     transforms.ToTensor(),
-# ])
-
-# aug_transform = transforms.Compose([
-#     transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
-
-#     transforms.RandomHorizontalFlip(),
-#     transforms.RandomVerticalFlip(),
-
-#     transforms.RandomRotation(20),
-
-#     transforms.ColorJitter(
-#         brightness=0.3,
-#         contrast=0.3
-#     ),
-
-#     transforms.ToTensor(),
-# ])
-
 def add_gaussian_noise(image):
 
     image = image.numpy()

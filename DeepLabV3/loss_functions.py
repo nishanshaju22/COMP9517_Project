@@ -1,6 +1,18 @@
 import torch
 import torch.nn as nn
 
+class BCELoss(nn.Module):
+
+    def __init__(self):
+        super().__init__()
+        self.bce = nn.BCEWithLogitsLoss()
+
+    def forward(self, preds, targets):
+
+        targets = targets.float()
+
+        return self.bce(preds, targets)
+
 class DiceLoss(nn.Module):
 
     def __init__(self):
@@ -44,7 +56,7 @@ class BCEDiceLoss(nn.Module):
             targets
         )
 
-        return bce_loss + dice_loss
+        return 0.5*bce_loss + 0.5*dice_loss
     
 class FocalLoss(nn.Module):
 
