@@ -181,8 +181,8 @@ def sample_pixels_stratified(
     # Normalise mask to binary {0, 1}
     binary_mask = (mask > 0).astype(np.uint8)
  
-    flat_features = extract_features(img_rgb)       # (H*W, 13)
-    flat_labels = binary_mask.reshape(-1)            # (H*W,)
+    flat_features = extract_features(img_rgb)      
+    flat_labels = binary_mask.reshape(-1)            
  
     wheat_idx = np.where(flat_labels == 1)[0]
     soil_idx  = np.where(flat_labels == 0)[0]
