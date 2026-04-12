@@ -124,28 +124,28 @@ def extract_features(img_rgb: np.ndarray) -> np.ndarray:
     gray = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2GRAY)
  
     # Vegetation indices 
-    exg = compute_ExG(img_rgb)   # (H, W)
-    ndi = compute_NDI(img_rgb)   # (H, W)
+    exg = compute_ExG(img_rgb)  
+    ndi = compute_NDI(img_rgb)  
  
     #  Texture 
-    lbp = compute_LBP(gray)      # (H, W)
-    sobel = compute_Sobel(gray)  # (H, W)
+    lbp = compute_LBP(gray)     
+    sobel = compute_Sobel(gray) 
  
     #  Stack into (H*W, 13) 
     features = np.column_stack([
-        img_rgb[:, :, 0].reshape(N),    # R
-        img_rgb[:, :, 1].reshape(N),    # G
-        img_rgb[:, :, 2].reshape(N),    # B
-        img_hsv[:, :, 0].reshape(N),    # H
-        img_hsv[:, :, 1].reshape(N),    # S
-        img_hsv[:, :, 2].reshape(N),    # V
-        img_lab[:, :, 0].reshape(N),    # L
-        img_lab[:, :, 1].reshape(N),    # a
-        img_lab[:, :, 2].reshape(N),    # b
-        exg.reshape(N),                 # ExG
-        ndi.reshape(N),                 # NDI
-        lbp.reshape(N),                 # LBP
-        sobel.reshape(N),               # Sobel
+        img_rgb[:, :, 0].reshape(N),   
+        img_rgb[:, :, 1].reshape(N),    
+        img_rgb[:, :, 2].reshape(N),    
+        img_hsv[:, :, 0].reshape(N),    
+        img_hsv[:, :, 1].reshape(N),    
+        img_hsv[:, :, 2].reshape(N),    
+        img_lab[:, :, 0].reshape(N),    
+        img_lab[:, :, 1].reshape(N),    
+        img_lab[:, :, 2].reshape(N),    
+        exg.reshape(N),                 
+        ndi.reshape(N),                 
+        lbp.reshape(N),                 
+        sobel.reshape(N),               
     ]).astype(np.float32)
  
     return features

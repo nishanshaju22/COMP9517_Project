@@ -16,9 +16,8 @@ from features import extract_features, load_image_mask_pair, build_training_tabl
 from eval_utils import evaluate, reshape_mask, morphological_cleanup
 
 
-# ---------------------------------------------------------------------------
-# File discovery
-# ---------------------------------------------------------------------------
+
+
 
 def get_image_mask_pairs(directory: Path) -> Tuple[List[Path], List[Path]]:
     """
@@ -41,9 +40,8 @@ def get_image_mask_pairs(directory: Path) -> Tuple[List[Path], List[Path]]:
     return img_paths, mask_paths
 
 
-# ---------------------------------------------------------------------------
+
 # Dataset builder
-# ---------------------------------------------------------------------------
 
 def build_train_val_tables(
     train_dir: Path,

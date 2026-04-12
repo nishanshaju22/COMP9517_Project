@@ -77,22 +77,3 @@ HYPOTHESES = [
                    "max_features": "sqrt", "class_weight": "balanced"},
     },
 ]
-
-
-# def get_hypothesis_names():
-#     """Return list of all hypothesis names"""
-#     return [h["hypothesis"] for h in HYPOTHESES]
-
-# def get_hypothesis_params(hypothesis_name):
-#     """Get parameters for a specific hypothesis by name"""
-#     for h in HYPOTHESES:
-#         if h["hypothesis"] == hypothesis_name:
-#             return h["params"]
-#     raise ValueError(f"Hypothesis '{hypothesis_name}' not found")
-
-# def get_hypothesis_rationale(hypothesis_name):
-#     """Get rationale for a specific hypothesis by name"""
-#     for h in HYPOTHESES:
-#         if h["hypothesis"] == hypothesis_name:
-#             return h["rationale"]
-#     raise ValueError(f"Hypothesis '{hypothesis_name}' not found")
