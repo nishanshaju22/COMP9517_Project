@@ -2,3 +2,4 @@ dataset/
 Data/
 checkpoints/
 .DS_STORE/
+random_forest_model.pkl/

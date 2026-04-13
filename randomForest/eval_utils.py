@@ -147,7 +147,7 @@ def evaluate_dataset(
 # Mask reconstruction
 
  
-def predictions_to_mask(
+def  reshape_mask(
     y_pred: np.ndarray,
     H: int = 350,
     W: int = 350,
@@ -167,12 +167,18 @@ def predictions_to_mask(
 def predict_on_image(model, img_rgb, apply_cleanup = False):
     X = extract_features(img_rgb)
     y_pred = model.predict(X)
-    mask = predictions_to_mask(y_pred, 350, 350)
+    mask = reshape_mask(y_pred, 350, 350)
     if apply_cleanup:
         mask = morphological_cleanup(mask)
     return mask
 
 
+def predict_mask(model, img_rgb: np.ndarray) -> np.ndarray:
+    """Extract features from a full image and return a (H, W) predicted mask."""
+    H, W = img_rgb.shape[:2]
+    X = extract_features(img_rgb)          
+    y_pred = model.predict(X)              
+    return reshape_mask(y_pred, H, W)
 
  
 def print_metrics(metrics: dict, model_name: str = "Model") -> None:

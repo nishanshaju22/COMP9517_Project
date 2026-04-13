@@ -13,12 +13,11 @@ from sklearn.ensemble import RandomForestClassifier
 from typing import List, Tuple
 
 from features import extract_features, load_image_mask_pair, build_training_table
-from eval_utils import evaluate, predictions_to_mask, morphological_cleanup
+from eval_utils import evaluate, reshape_mask, morphological_cleanup
 
 
-# ---------------------------------------------------------------------------
-# File discovery
-# ---------------------------------------------------------------------------
+
+
 
 def get_image_mask_pairs(directory: Path) -> Tuple[List[Path], List[Path]]:
     """
@@ -41,9 +40,8 @@ def get_image_mask_pairs(directory: Path) -> Tuple[List[Path], List[Path]]:
     return img_paths, mask_paths
 
 
-# ---------------------------------------------------------------------------
+
 # Dataset builder
-# ---------------------------------------------------------------------------
 
 def build_train_val_tables(
     train_dir: Path,
@@ -105,7 +103,7 @@ def run_trial(
         img_rgb, gt_mask = load_image_mask_pair(img_path, mask_path)
         X = extract_features(img_rgb)
         y_pred = model.predict(X)
-        pred_mask = predictions_to_mask(y_pred, 350, 350)
+        pred_mask = reshape_mask(y_pred, 350, 350)
         if apply_cleanup:
             pred_mask = morphological_cleanup(pred_mask)
         m = evaluate(gt_mask, pred_mask, apply_cleanup=False)
