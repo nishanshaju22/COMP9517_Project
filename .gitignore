@@ -2,3 +2,5 @@ dataset/
 Data/
 checkpoints/
 deeplab_*
+.DS_STORE/
+random_forest_model.pkl/

@@ -1,0 +1,150 @@
+{
+  "best_hypothesis": "depth_control_aggressive",
+  "best_params": {
+    "n_estimators": 100,
+    "max_depth": 12,
+    "min_samples_leaf": 4,
+    "max_features": "sqrt",
+    "class_weight": "balanced"
+  },
+  "best_iou": 0.839271,
+  "rationale": "More aggressive cap (depth=12). Tests whether shallower trees lose too much recall on thin wheat stems.",
+  "n_trials": 9,
+  "all_trials": [
+    {
+      "hypothesis": "baseline",
+      "rationale": "Reproduce the default config as the reference point. All other trials are compared against this.",
+      "params": {
+        "n_estimators": 100,
+        "max_depth": null,
+        "min_samples_leaf": 4,
+        "max_features": "sqrt",
+        "class_weight": "balanced"
+      },
+      "mean_iou": 0.836203,
+      "std_iou": 0.132079,
+      "train_time_s": 131.303,
+      "inference_time_s": 24.816
+    },
+    {
+      "hypothesis": "depth_control_mild",
+      "rationale": "Uncapped trees can memorise individual soil texture patches. Capping at depth=20 forces more generalised splits.",
+      "params": {
+        "n_estimators": 100,
+        "max_depth": 20,
+        "min_samples_leaf": 4,
+        "max_features": "sqrt",
+        "class_weight": "balanced"
+      },
+      "mean_iou": 0.836739,
+      "std_iou": 0.131706,
+      "train_time_s": 105.91,
+      "inference_time_s": 11.592
+    },
+    {
+      "hypothesis": "depth_control_aggressive",
+      "rationale": "More aggressive cap (depth=12). Tests whether shallower trees lose too much recall on thin wheat stems.",
+      "params": {
+        "n_estimators": 100,
+        "max_depth": 12,
+        "min_samples_leaf": 4,
+        "max_features": "sqrt",
+        "class_weight": "balanced"
+      },
+      "mean_iou": 0.839271,
+      "std_iou": 0.130169,
+      "train_time_s": 71.818,
+      "inference_time_s": 5.83
+    },
+    {
+      "hypothesis": "smooth_boundary_small_leaf",
+      "rationale": "Larger min_samples_leaf prevents splits on tiny pixel clusters, producing smoother wheat/soil boundaries and less salt-pepper noise.",
+      "params": {
+        "n_estimators": 100,
+        "max_depth": null,
+        "min_samples_leaf": 16,
+        "max_features": "sqrt",
+        "class_weight": "balanced"
+      },
+      "mean_iou": 0.837525,
+      "std_iou": 0.131199,
+      "train_time_s": 97.965,
+      "inference_time_s": 12.543
+    },
+    {
+      "hypothesis": "smooth_boundary_large_leaf",
+      "rationale": "Even larger leaf size (32). Tests the trade-off between smoothness and losing fine wheat detail.",
+      "params": {
+        "n_estimators": 100,
+        "max_depth": null,
+        "min_samples_leaf": 32,
+        "max_features": "sqrt",
+        "class_weight": "balanced"
+      },
+      "mean_iou": 0.837704,
+      "std_iou": 0.131056,
+      "train_time_s": 92.741,
+      "inference_time_s": 10.915
+    },
+    {
+      "hypothesis": "more_features_per_split",
+      "rationale": "sqrt(13)~3 features per split may consistently skip ExG/NDI. Raising to 6 gives vegetation indices a fairer chance each split.",
+      "params": {
+        "n_estimators": 100,
+        "max_depth": null,
+        "min_samples_leaf": 4,
+        "max_features": 6,
+        "class_weight": "balanced"
+      },
+      "mean_iou": 0.836038,
+      "std_iou": 0.13203,
+      "train_time_s": 188.976,
+      "inference_time_s": 16.773
+    },
+    {
+      "hypothesis": "all_features_per_split",
+      "rationale": "Using all 13 features per split turns RF into a deterministic boosted tree. Tests whether feature diversity actually helps.",
+      "params": {
+        "n_estimators": 100,
+        "max_depth": null,
+        "min_samples_leaf": 4,
+        "max_features": null,
+        "class_weight": "balanced"
+      },
+      "mean_iou": 0.835484,
+      "std_iou": 0.132093,
+      "train_time_s": 457.299,
+      "inference_time_s": 26.79
+    },
+    {
+      "hypothesis": "more_trees",
+      "rationale": "Hard images (dense occlusion, low contrast) have high prediction variance. 200 trees should reduce this at the cost of training time.",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": null,
+        "min_samples_leaf": 4,
+        "max_features": "sqrt",
+        "class_weight": "balanced"
+      },
+      "mean_iou": 0.836393,
+      "std_iou": 0.131585,
+      "train_time_s": 220.613,
+      "inference_time_s": 47.174
+    },
+    {
+      "hypothesis": "combined_depth_and_leaf",
+      "rationale": "If depth=20 and leaf=16 individually reduce noise, combining them may give cleaner predictions without sacrificing recall.",
+      "params": {
+        "n_estimators": 100,
+        "max_depth": 20,
+        "min_samples_leaf": 16,
+        "max_features": "sqrt",
+        "class_weight": "balanced"
+      },
+      "mean_iou": 0.837646,
+      "std_iou": 0.13111,
+      "train_time_s": 103.117,
+      "inference_time_s": 10.987
+    }
+  ]
+}
