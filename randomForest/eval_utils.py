@@ -1,7 +1,7 @@
 """
 eval_utils.py
 evaluation and post-processing utilities.
-Imported by model_rf.ipynb, model_sgd.ipynb, and model_xgb.ipynb.
+Imported by model_rf.ipynb  and model_xgb.ipynb.
 """
  
 import cv2
@@ -10,7 +10,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score, confusion_m
 from typing import Optional
 from features import extract_features
 
-# Post-processing
+# Remove salt-and-pepper noise from a raw pixel-wise prediction mask.
 
  
 def morphological_cleanup(
@@ -18,23 +18,7 @@ def morphological_cleanup(
     open_kernel: int = 3,
     close_kernel: int = 7,
 ) -> np.ndarray:
-    """
-    Remove salt-and-pepper noise from a raw pixel-wise prediction mask.
- 
-    Steps:
-        1. Opening  (erosion → dilation) — removes small isolated false-positive
-           blobs (misclassified soil pixels predicted as wheat).
-        2. Closing  (dilation → erosion) — fills small holes inside wheat regions
-           (misclassified pixels inside a leaf predicted as soil).
- 
-    Args:
-        pred_mask:    (H, W) binary uint8 mask — 1 = wheat, 0 = soil.
-        open_kernel:  Side length of the opening structuring element (px).
-        close_kernel: Side length of the closing structuring element (px).
- 
-    Returns:
-        Cleaned (H, W) binary uint8 mask.
-    """
+   
     k_open  = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (open_kernel,  open_kernel))
     k_close = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (close_kernel, close_kernel))
  
@@ -70,38 +54,21 @@ def compute_iou(y_true: np.ndarray, y_pred: np.ndarray) -> float:
         return 1.0  
     return float(intersection / union)
  
- 
+ #Compute all required project metrics for a single predicted mask.
 def evaluate(
     y_true: np.ndarray,
     y_pred: np.ndarray,
     apply_cleanup: bool = False,
     mask_shape: Optional[tuple[int, int]] = None
 ) -> dict:
-    """
-    Compute all required project metrics for a single predicted mask.
- 
-    Metrics returned:
-        precision, recall, f1, iou
- 
-    Args:
-        y_true:        Ground-truth binary array (flat or 2-D).
-        y_pred:        Predicted binary array (flat or 2-D).
-        apply_cleanup: If True, run morphological_cleanup before scoring.
-                       Requires mask_shape.
-        mask_shape:    (H, W) needed to reshape for cleanup.
- 
-    Returns:
-        dict with keys: precision, recall, f1, iou
-    """
+    
     y_true_flat = y_true.reshape(-1).astype(np.uint8)
     y_pred_flat = y_pred.reshape(-1).astype(np.uint8)
  
-    if apply_cleanup:
-        if mask_shape is None:
-            raise ValueError("mask_shape must be provided when apply_cleanup=True")
-        y_pred_2d   = y_pred_flat.reshape(mask_shape)
-        y_pred_2d   = morphological_cleanup(y_pred_2d)
-        y_pred_flat = y_pred_2d.reshape(-1)
+    
+    y_pred_2d   = y_pred_flat.reshape(mask_shape)
+    y_pred_2d   = morphological_cleanup(y_pred_2d)
+    y_pred_flat = y_pred_2d.reshape(-1)
  
     return {
         "precision": precision_score(y_true_flat, y_pred_flat, zero_division=0),
@@ -110,24 +77,13 @@ def evaluate(
         "iou":       compute_iou(y_true_flat,      y_pred_flat),
     }
  
- 
+ #Compute mean metrics across a list of image predictions.
 def evaluate_dataset(
     gt_masks: list[np.ndarray],
     pred_masks: list[np.ndarray],
     apply_cleanup: bool = False,
 ) -> dict:
-    """
-    Compute mean metrics across a list of image predictions.
- 
-    Args:
-        gt_masks:      List of (H, W) ground-truth binary masks.
-        pred_masks:    List of (H, W) predicted binary masks.
-        apply_cleanup: Whether to apply morphological cleanup before scoring.
- 
-    Returns:
-        dict with keys: precision, recall, f1, iou (all mean floats),
-        plus 'per_image' — a list of per-image metric dicts.
-    """
+   
     per_image = []
     for gt, pred in zip(gt_masks, pred_masks):
         metrics = evaluate(
@@ -144,7 +100,7 @@ def evaluate_dataset(
  
  
 
-# Mask reconstruction
+#   Reshape a flat prediction array back into a (H, W) binary image.
 
  
 def  reshape_mask(
@@ -152,16 +108,6 @@ def  reshape_mask(
     H: int = 350,
     W: int = 350,
 ) -> np.ndarray:
-    """
-    Reshape a flat prediction array back into a (H, W) binary image.
- 
-    Args:
-        y_pred: (H*W,) predicted label array from model.predict().
-        H, W:   Image dimensions (default 350×350 for EWS).
- 
-    Returns:
-        (H, W) uint8 binary mask — 1 = wheat, 0 = soil.
-    """
     return y_pred.reshape(H, W).astype(np.uint8)
  
 def predict_on_image(model, img_rgb, apply_cleanup = False):
@@ -172,23 +118,18 @@ def predict_on_image(model, img_rgb, apply_cleanup = False):
         mask = morphological_cleanup(mask)
     return mask
 
-
+#  Extract features from a full image and return a (H, W) predicted mask.
 def predict_mask(model, img_rgb: np.ndarray) -> np.ndarray:
-    """Extract features from a full image and return a (H, W) predicted mask."""
+
     H, W = img_rgb.shape[:2]
     X = extract_features(img_rgb)          
     y_pred = model.predict(X)              
     return reshape_mask(y_pred, H, W)
 
  
+# Print a formatted metrics summary to stdout.
 def print_metrics(metrics: dict, model_name: str = "Model") -> None:
-    """
-    Print a formatted metrics summary to stdout.
- 
-    Args:
-        metrics:    Dict returned by evaluate() or evaluate_dataset().
-        model_name: Label shown in the header.
-    """
+
     print(f"\n{'='*40}")
     print(f"  {model_name}")
     print(f"{'='*40}")

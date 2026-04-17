@@ -2,7 +2,7 @@
 features.py
 
 
-Imported by model_rf.py, model_sgd.py, and model_xgb.py.
+Imported by model_rf.py and model_xgb.py.
  
 Features extracted per pixel:
     RGB (3) | HSV (3) | Lab (3) | ExG (1) | NDI (1) | LBP (1) | Sobel (1)
@@ -20,26 +20,13 @@ from typing import Optional , Union
 
  
 def compute_ExG(img_rgb: np.ndarray) -> np.ndarray:
-    """
-    Excess Green Index: ExG = 2G - R - B.
-    Normalises channels to [0, 1] before computing so the result is
-    scale-invariant regardless of uint8 vs float input.
- 
-    Returns a (H, W) float32 array.
-    """
+   
     img = img_rgb.astype(np.float32) / 255.0
     R, G, B = img[..., 0], img[..., 1], img[..., 2]
     return (2.0 * G - R - B).astype(np.float32)
  
  
 def compute_NDI(img_rgb: np.ndarray) -> np.ndarray:
-
-    """
-    Normalised Difference Index: NDI = (G - R) / (G + R + 1e-6).
-    Useful companion to ExG — captures the green/red ratio directly.
- 
-    Returns a (H, W) float32 array in [-1, 1].
-    """
     img = img_rgb.astype(np.float32) / 255.0
     R, G = img[..., 0], img[..., 1]
     return ((G - R) / (G + R + 1e-6)).astype(np.float32)
@@ -267,7 +254,7 @@ def build_training_table(
  
  
 
-# Feature names (for model inspection / SHAP)
+# Feature names (for model inspection)
 
  
 FEATURE_NAMES = [
