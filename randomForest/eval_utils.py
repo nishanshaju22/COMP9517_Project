@@ -64,12 +64,12 @@ def evaluate(
     
     y_true_flat = y_true.reshape(-1).astype(np.uint8)
     y_pred_flat = y_pred.reshape(-1).astype(np.uint8)
- 
-    
-    y_pred_2d   = y_pred_flat.reshape(mask_shape)
-    y_pred_2d   = morphological_cleanup(y_pred_2d)
-    y_pred_flat = y_pred_2d.reshape(-1)
- 
+
+    if apply_cleanup:
+        y_pred_2d = y_pred_flat.reshape(mask_shape)
+        y_pred_2d = morphological_cleanup(y_pred_2d)
+        y_pred_flat = y_pred_2d.reshape(-1)
+
     return {
         "precision": precision_score(y_true_flat, y_pred_flat, zero_division=0),
         "recall":    recall_score(y_true_flat,    y_pred_flat, zero_division=0),
