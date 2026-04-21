@@ -21,33 +21,7 @@ def apply_distortions(
     distortion: str = "blur",
     severity: int = 2,
 ) -> np.ndarray:
-    """
-    Apply a realistic image distortion to an RGB image for stress-testing.
-
-    Used to evaluate how robust a trained model is to real-world degradation
-    (e.g. camera blur, low light, sensor noise, partial occlusion).
-    Masks are NOT distorted — the ground truth stays the same, only the input
-    image changes.
-
-    Args:
-        img_rgb:    (H, W, 3) uint8 RGB image.
-        distortion: One of 'blur', 'noise', 'brightness', 'occlusion'.
-        severity:   Integer 1-3 controlling how strong the distortion is.
-                    1 = mild, 2 = moderate, 3 = severe.
-
-    Returns:
-        (H, W, 3) uint8 distorted RGB image.
-
-    Distortion details:
-        blur       — Gaussian blur. Simulates out-of-focus or motion blur.
-                     Severity maps to kernel sizes 7, 15, 25.
-        noise      — Gaussian noise added to all channels.
-                     Severity maps to std devs 15, 30, 50.
-        brightness — Reduces overall brightness by scaling pixel values down.
-                     Severity maps to scale factors 0.7, 0.5, 0.3.
-        occlusion  — Blacks out a random rectangular patch.
-                     Severity maps to patch sizes 60x60, 100x100, 150x150.
-    """
+   
     if severity not in (1, 2, 3):
         raise ValueError("severity must be 1, 2, or 3")
 

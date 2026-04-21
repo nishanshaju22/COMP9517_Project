@@ -2,11 +2,12 @@
 hypotheses_config.py
 
 Configuration for Random Forest hyperparameter hypotheses testing.
-Each hypothesis isolates one variable to test specific research questions.
+Each hypothesis isolates one variable to test specific  questions.
 """
 
 # Each entry is a named hypothesis + the params that test it.
 # Variants within a hypothesis isolate one variable at a time.
+
 HYPOTHESES = [
     {
         "hypothesis": "baseline",
@@ -15,7 +16,7 @@ HYPOTHESES = [
         "params": {"n_estimators": 100, "max_depth": None, "min_samples_leaf": 4,
                    "max_features": "sqrt", "class_weight": "balanced"},
     },
-    # --- Hypothesis 1: deeper trees memorise soil texture patches ---
+    
     {
         "hypothesis": "depth_control_mild",
         "rationale": "Uncapped trees can memorise individual soil texture patches. "
@@ -30,7 +31,7 @@ HYPOTHESES = [
         "params": {"n_estimators": 100, "max_depth": 12, "min_samples_leaf": 4,
                    "max_features": "sqrt", "class_weight": "balanced"},
     },
-    # --- Hypothesis 2: leaf size controls boundary smoothness ---
+
     {
         "hypothesis": "smooth_boundary_small_leaf",
         "rationale": "Larger min_samples_leaf prevents splits on tiny pixel clusters, "
@@ -45,7 +46,7 @@ HYPOTHESES = [
         "params": {"n_estimators": 100, "max_depth": None, "min_samples_leaf": 32,
                    "max_features": "sqrt", "class_weight": "balanced"},
     },
-    # --- Hypothesis 3: feature subset affects vegetation index usage ---
+    
     {
         "hypothesis": "more_features_per_split",
         "rationale": "sqrt(13)~3 features per split may consistently skip ExG/NDI. "
@@ -60,7 +61,7 @@ HYPOTHESES = [
         "params": {"n_estimators": 100, "max_depth": None, "min_samples_leaf": 4,
                    "max_features": None, "class_weight": "balanced"},
     },
-    # --- Hypothesis 4: more trees reduce variance on hard images ---
+
     {
         "hypothesis": "more_trees",
         "rationale": "Hard images (dense occlusion, low contrast) have high prediction "
@@ -68,7 +69,7 @@ HYPOTHESES = [
         "params": {"n_estimators": 200, "max_depth": None, "min_samples_leaf": 4,
                    "max_features": "sqrt", "class_weight": "balanced"},
     },
-    # --- Hypothesis 5: combine best depth + leaf insights ---
+
     {
         "hypothesis": "combined_depth_and_leaf",
         "rationale": "If depth=20 and leaf=16 individually reduce noise, combining "

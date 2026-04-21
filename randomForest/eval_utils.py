@@ -1,7 +1,6 @@
 """
 eval_utils.py
 evaluation and post-processing utilities.
-Imported by model_rf.ipynb  and model_xgb.ipynb.
 """
  
 import cv2
@@ -26,24 +25,11 @@ def morphological_cleanup(
     closed = cv2.morphologyEx(opened,                     cv2.MORPH_CLOSE, k_close)
     return closed
  
- 
-
 # Metrics
 
  
 def compute_iou(y_true: np.ndarray, y_pred: np.ndarray) -> float:
-    """
-    Intersection over Union for binary segmentation.
- 
-    IoU = TP / (TP + FP + FN)
- 
-    Args:
-        y_true: Flat or 2-D ground-truth binary array.
-        y_pred: Flat or 2-D predicted binary array.
- 
-    Returns:
-        IoU score as a float in [0, 1].
-    """
+  
     y_true = y_true.reshape(-1).astype(bool)
     y_pred = y_pred.reshape(-1).astype(bool)
  
@@ -102,7 +88,6 @@ def evaluate_dataset(
 
 #   Reshape a flat prediction array back into a (H, W) binary image.
 
- 
 def  reshape_mask(
     y_pred: np.ndarray,
     H: int = 350,
@@ -126,8 +111,7 @@ def predict_mask(model, img_rgb: np.ndarray) -> np.ndarray:
     y_pred = model.predict(X)              
     return reshape_mask(y_pred, H, W)
 
- 
-# Print a formatted metrics summary to stdout.
+
 def print_metrics(metrics: dict, model_name: str = "Model") -> None:
 
     print(f"\n{'='*40}")

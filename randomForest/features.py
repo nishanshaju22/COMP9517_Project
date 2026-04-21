@@ -1,20 +1,18 @@
-"""
-features.py
 
-
-Imported by model_rf.py and model_xgb.py.
- 
-Features extracted per pixel:
-    RGB (3) | HSV (3) | Lab (3) | ExG (1) | NDI (1) | LBP (1) | Sobel (1)
-    = 13 features total
-"""
- 
 import cv2
 import numpy as np
 from skimage.feature import local_binary_pattern
 from pathlib import Path
 from typing import Optional , Union
+import matplotlib.pyplot as plt
  
+FEATURE_NAMES = [
+    "R", "G", "B",
+    "H", "S", "V",
+    "L", "a", "b",
+    "ExG", "NDI", "LBP", "Sobel",
+]
+
 
 # Vegetation indices
 
@@ -38,31 +36,12 @@ def compute_NDI(img_rgb: np.ndarray) -> np.ndarray:
  
 def compute_LBP(gray: np.ndarray, radius: int = 1, n_points: int = 8) -> np.ndarray:
 
-    """
-    Local Binary Pattern on a single-channel (grayscale) image.
-    Uses 'uniform' method which produces sparse, rotation-invariant codes.
- 
-    Args:
-        gray:     (H, W) uint8 grayscale image.
-        radius:   LBP neighbourhood radius (default 1 — compact & fast).
-        n_points: Number of points in the LBP ring (default 8).
- 
-    Returns a (H, W) float32 array normalised to [0, 1].
-    """
-
     lbp = local_binary_pattern(gray, n_points, radius, method="uniform")
     lbp_max = n_points + 2  # number of uniform patterns
     return (lbp / lbp_max).astype(np.float32)
  
  
 def compute_Sobel(gray: np.ndarray) -> np.ndarray:
-
-    """
-    Sobel edge magnitude — useful as a secondary texture cue alongside LBP.
-    Soil tends to have strong random edges; leaves have structured venation.
- 
-    Returns a (H, W) float32 array normalised to [0, 1].
-    """
 
     sx = cv2.Sobel(gray, cv2.CV_32F, 1, 0, ksize=3)
     sy = cv2.Sobel(gray, cv2.CV_32F, 0, 1, ksize=3)
@@ -74,34 +53,11 @@ def compute_Sobel(gray: np.ndarray) -> np.ndarray:
  
  
  
-# Core feature extraction
+#  Extract a 13-dimensional feature vector for every pixel in an RGB image.
 
  
 def extract_features(img_rgb: np.ndarray) -> np.ndarray:
-    """
-    Extract a 13-dimensional feature vector for every pixel in an RGB image.
- 
-    Feature layout (column order):
-        0  R       — red channel [0, 255]
-        1  G       — green channel [0, 255]
-        2  B       — blue channel [0, 255]
-        3  H       — hue [0, 179] (OpenCV convention)
-        4  S       — saturation [0, 255]
-        5  V       — value [0, 255]
-        6  L       — CIE L* (lightness) [0, 100]
-        7  a       — CIE a* (greenred) [-128, 127]
-        8  b       — CIE b* (blue–yellow) [-128, 127]
-        9  ExG     — Excess Green Index (float32)
-        10 NDI     — Normalised Difference Index (float32, [-1, 1])
-        11 LBP     — Local Binary Pattern (float32, [0, 1])
-        12 Sobel   — Sobel edge magnitude (float32, [0, 1])
- 
-    Args:
-        img_rgb: (H, W, 3) uint8 RGB image.
- 
-    Returns:
-        (H*W, 13) float32 feature matrix — one row per pixel.
-    """
+   
     H, W = img_rgb.shape[:2]
     N = H * W
  
@@ -139,7 +95,9 @@ def extract_features(img_rgb: np.ndarray) -> np.ndarray:
  
  
 
-# Stratified pixel sampler
+# Sample an equal number of wheat (1) and soil (0) pixels from one image.
+# Stratification prevents class imbalance from dominating the training table.
+ 
 
  
 def sample_pixels_stratified(
@@ -148,24 +106,10 @@ def sample_pixels_stratified(
     n_per_class: int = 5000,
     rng: Optional[np.random.Generator] = None
 ) -> tuple[np.ndarray, np.ndarray]:
-    """
-    Sample an equal number of wheat (1) and soil (0) pixels from one image.
-    Stratification prevents class imbalance from dominating the training table.
- 
-    Args:
-        img_rgb:      (H, W, 3) uint8 RGB image.
-        mask:         (H, W) binary uint8 mask — 255 or 1 = wheat, 0 = soil.
-        n_per_class:  How many pixels to sample from each class.
-        rng:          Optional numpy Generator for reproducibility.
- 
-    Returns:
-        X: (2*n_per_class, 13) float32 feature matrix.
-        y: (2*n_per_class,)   int8 label vector  (0 = soil, 1 = wheat).
-    """
+  
     if rng is None:
         rng = np.random.default_rng()
  
-    # Normalise mask to binary {0, 1}
     binary_mask = (mask > 0).astype(np.uint8)
  
     flat_features = extract_features(img_rgb)      
@@ -196,16 +140,7 @@ def load_image_mask_pair(
     img_path: Union[str, Path, None],
     mask_path: Union[str, Path,None],
 ) -> tuple[np.ndarray, np.ndarray]:
-    """
-    Load an RGB image and its binary mask from disk.
- 
-    The EWS dataset stores masks as single-channel PNGs where plant pixels = 255.
-    This function normalises the mask to {0, 1}.
- 
-    Returns:
-        img_rgb:  (350, 350, 3) uint8 RGB array.
-        mask:     (350, 350)    uint8 binary array — 1 = wheat, 0 = soil.
-    """
+  
     img_bgr = cv2.imread(str(img_path), cv2.IMREAD_COLOR)
     if img_bgr is None:
         raise FileNotFoundError(f"Image not found: {img_path}")
@@ -218,29 +153,15 @@ def load_image_mask_pair(
  
     return img_rgb, mask
  
- 
+# Build a combined feature matrix and label vector from a list of
+#   image/mask pairs using stratified sampling.
 def build_training_table(
     img_paths: list[Path],
     mask_paths: list[Path],
     n_per_class_per_image: int = 5000,
     seed: int = 42,
 ) -> tuple[np.ndarray, np.ndarray]:
-    
-    """
-    Build a combined feature matrix and label vector from a list of
-    image/mask pairs using stratified sampling.
- 
-    Args:
-        img_paths:              Ordered list of image file paths.
-        mask_paths:             Ordered list of corresponding mask file paths.
-        n_per_class_per_image:  Pixels sampled per class per image.
-        seed:                   Random seed for reproducibility.
- 
-    Returns:
-        X: (N, 13) float32 — stacked features from all images.
-        y: (N,)    int8    — stacked labels.
-    """
-
+   
     rng = np.random.default_rng(seed)
     X_parts, y_parts = [], []
  
@@ -252,15 +173,42 @@ def build_training_table(
  
     return np.vstack(X_parts), np.concatenate(y_parts)
  
+def visualise_indices(img_paths, n=3):
+    fig, axes = plt.subplots(n, 4, figsize=(16, 4*n))
+    
+    for i, img_path in enumerate(img_paths[:n]):
+        img = cv2.imread(img_path)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        
+        exg   = compute_ExG(img)
+        ndi   = compute_NDI(img)
+        lab = cv2.cvtColor(img, cv2.COLOR_RGB2LAB)
+        a_star = lab[:,:,1].astype(np.float32) 
+        
+       
+        axes[i, 0].imshow(img)
+        axes[i, 0].set_title(f"Raw Image {i+1}")
+        axes[i, 0].axis("off")
+        
+        im1 = axes[i, 1].imshow(exg, cmap="RdYlGn", vmin=-1, vmax=1)
+        axes[i, 1].set_title(f"ExG {i+1}")
+        axes[i, 1].axis("off")
+        plt.colorbar(im1, ax=axes[i, 1], fraction=0.046)
+        
+        
+        im2 = axes[i, 2].imshow(ndi, cmap="RdYlGn", vmin=-1, vmax=1)
+        axes[i, 2].set_title(f"NDI {i+1}")
+        axes[i, 2].axis("off")
+        plt.colorbar(im2, ax=axes[i, 2], fraction=0.046)
+        
+        im3 = axes[i, 3].imshow(a_star, cmap="RdYlGn_r")
+        axes[i, 3].set_title(f"a* (CIELAB) {i+1}")
+        axes[i, 3].axis("off")
+        plt.colorbar(im3, ax=axes[i, 3], fraction=0.046)
+    
+    plt.suptitle("Vegetation Index Visualisation", fontsize=14, fontweight="bold")
+    plt.tight_layout()
+    plt.show()
+    
+    return exg, ndi, a_star
  
-
-# Feature names (for model inspection)
-
- 
-FEATURE_NAMES = [
-    "R", "G", "B",
-    "H", "S", "V",
-    "L", "a", "b",
-    "ExG", "NDI", "LBP", "Sobel",
-]
-

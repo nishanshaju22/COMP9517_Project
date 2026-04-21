@@ -20,16 +20,7 @@ from eval_utils import evaluate, reshape_mask, morphological_cleanup
 
 
 def get_image_mask_pairs(directory: Path) -> Tuple[List[Path], List[Path]]:
-    """
-    Discover all image/mask pairs in a directory.
-    Masks are identified by the '_mask' suffix before .png.
-
-    Args:
-        directory: Path to train/, validation/, or test/ folder.
-
-    Returns:
-        img_paths, mask_paths — matched and sorted lists.
-    """
+   
     all_pngs = sorted(directory.glob("*.png"))
     mask_paths = [p for p in all_pngs if p.stem.endswith("_mask")]
     img_paths = []
@@ -77,20 +68,7 @@ def run_trial(
     val_mask_paths: List[Path],
     apply_cleanup: bool = True,
 ) -> dict:
-    """
-    Train a RandomForestClassifier with given params and evaluate on val set.
-
-    Args:
-        params:          RF hyperparameters (passed directly to sklearn).
-        X_train:         Training feature matrix.
-        y_train:         Training labels.
-        val_img_paths:   Validation image paths.
-        val_mask_paths:  Validation mask paths.
-        apply_cleanup:   Whether to apply morphological cleanup before scoring.
-
-    Returns:
-        dict with mean_iou, std_iou, train_time_s, inference_time_s.
-    """
+    
     model = RandomForestClassifier(**params, n_jobs=-1, random_state=42)
 
     t0 = time.time()
@@ -123,16 +101,7 @@ def run_trial(
 
 
 def save_hyperparam_results(all_results: list, output_path: str = "rf_hyperparam_results.json") -> dict:
-    """
-    Find the best trial, save all results to JSON, and return the best entry.
-
-    Args:
-        all_results:  List of trial result dicts from run_trial.
-        output_path:  Where to save the JSON.
-
-    Returns:
-        best trial dict.
-    """
+   
     best = max(all_results, key=lambda x: x["mean_iou"])
 
     output = {
@@ -157,15 +126,7 @@ def save_hyperparam_results(all_results: list, output_path: str = "rf_hyperparam
 
 
 def load_best_params(json_path: str = "rf_hyperparam_results.json") -> dict:
-    """
-    Load the best hyperparameters from a saved JSON file.
-
-    Args:
-        json_path: Path to the hyperparam results JSON.
-
-    Returns:
-        dict of RF params ready to pass to RandomForestClassifier.
-    """
+    
     with open(json_path) as f:
         data = json.load(f)
     print(f"Loaded params from: {data['best_hypothesis']}  (IoU={data['best_iou']:.4f})")
