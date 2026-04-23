@@ -47,3 +47,4 @@ https://www.geeksforgeeks.org/machine-learning/image-segmentation-using-pythons-
 https://github.com/qubvel/segmentation_models.pytorch
 https://arxiv.org/abs/1412.6980
 https://github.com/mrdbourke/pytorch-deep-learning
+https://xgboost.readthedocs.io/en/release_3.2.0/
