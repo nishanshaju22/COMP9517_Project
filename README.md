@@ -44,4 +44,6 @@ https://www.geeksforgeeks.org/python/time-perf_counter-function-in-python/
 https://albumentations.ai/docs/3-basic-usage/semantic-segmentation/
 https://scikit-image.org/docs/stable/api/skimage.segmentation.html
 https://www.geeksforgeeks.org/machine-learning/image-segmentation-using-pythons-scikit-image-module/
-
+https://github.com/qubvel/segmentation_models.pytorch
+https://arxiv.org/abs/1412.6980
+https://github.com/mrdbourke/pytorch-deep-learning
