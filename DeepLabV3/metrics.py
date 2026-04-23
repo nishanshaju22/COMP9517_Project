@@ -27,7 +27,7 @@ def evaluate_model(
             images = images.to(device)
             masks = masks.to(device)
 
-            outputs = model(images)['out']
+            outputs = model(images)
 
             loss = loss_fn(
                 outputs,
