@@ -2,8 +2,6 @@
 distortions.py
 
 Image distortion utilities for robustness stress-testing.
-Imported by model_rf.ipynb and model_xgb.ipynb.
-
 Masks are NEVER distorted — ground truth stays clean.
 Only the input RGB image is modified before feature extraction.
 """
@@ -13,8 +11,6 @@ import numpy as np
 
 DISTORTION_TYPES = ["blur", "noise", "brightness", "occlusion"]
 SEVERITY_LEVELS  = [1, 2, 3]
-
-
 
 def apply_distortions(
     img_rgb: np.ndarray,

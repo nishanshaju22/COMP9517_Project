@@ -10,8 +10,6 @@ from typing import Optional
 from features import extract_features
 
 # Remove salt-and-pepper noise from a raw pixel-wise prediction mask.
-
- 
 def morphological_cleanup(
     pred_mask: np.ndarray,
     open_kernel: int = 3,
@@ -26,8 +24,6 @@ def morphological_cleanup(
     return closed
  
 # Metrics
-
- 
 def compute_iou(y_true: np.ndarray, y_pred: np.ndarray) -> float:
   
     y_true = y_true.reshape(-1).astype(bool)
@@ -40,7 +36,6 @@ def compute_iou(y_true: np.ndarray, y_pred: np.ndarray) -> float:
         return 1.0  
     return float(intersection / union)
  
- #Compute all required project metrics for a single predicted mask.
 def evaluate(
     y_true: np.ndarray,
     y_pred: np.ndarray,
@@ -87,7 +82,6 @@ def evaluate_dataset(
  
 
 #   Reshape a flat prediction array back into a (H, W) binary image.
-
 def  reshape_mask(
     y_pred: np.ndarray,
     H: int = 350,

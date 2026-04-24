@@ -23,8 +23,8 @@
       },
       "mean_iou": 0.836203,
       "std_iou": 0.132079,
-      "train_time_s": 131.303,
-      "inference_time_s": 24.816
+      "train_time_s": 160.559,
+      "inference_time_s": 18.769
     },
     {
       "hypothesis": "depth_control_mild",
@@ -38,8 +38,8 @@
       },
       "mean_iou": 0.836739,
       "std_iou": 0.131706,
-      "train_time_s": 105.91,
-      "inference_time_s": 11.592
+      "train_time_s": 107.195,
+      "inference_time_s": 20.322
     },
     {
       "hypothesis": "depth_control_aggressive",
@@ -53,8 +53,8 @@
       },
       "mean_iou": 0.839271,
       "std_iou": 0.130169,
-      "train_time_s": 71.818,
-      "inference_time_s": 5.83
+      "train_time_s": 95.968,
+      "inference_time_s": 6.861
     },
     {
       "hypothesis": "smooth_boundary_small_leaf",
@@ -68,8 +68,8 @@
       },
       "mean_iou": 0.837525,
       "std_iou": 0.131199,
-      "train_time_s": 97.965,
-      "inference_time_s": 12.543
+      "train_time_s": 107.583,
+      "inference_time_s": 14.818
     },
     {
       "hypothesis": "smooth_boundary_large_leaf",
@@ -83,8 +83,8 @@
       },
       "mean_iou": 0.837704,
       "std_iou": 0.131056,
-      "train_time_s": 92.741,
-      "inference_time_s": 10.915
+      "train_time_s": 105.914,
+      "inference_time_s": 11.678
     },
     {
       "hypothesis": "more_features_per_split",
@@ -98,8 +98,8 @@
       },
       "mean_iou": 0.836038,
       "std_iou": 0.13203,
-      "train_time_s": 188.976,
-      "inference_time_s": 16.773
+      "train_time_s": 192.531,
+      "inference_time_s": 15.505
     },
     {
       "hypothesis": "all_features_per_split",
@@ -113,8 +113,8 @@
       },
       "mean_iou": 0.835484,
       "std_iou": 0.132093,
-      "train_time_s": 457.299,
-      "inference_time_s": 26.79
+      "train_time_s": 391.491,
+      "inference_time_s": 16.218
     },
     {
       "hypothesis": "more_trees",
@@ -128,8 +128,8 @@
       },
       "mean_iou": 0.836393,
       "std_iou": 0.131585,
-      "train_time_s": 220.613,
-      "inference_time_s": 47.174
+      "train_time_s": 242.552,
+      "inference_time_s": 59.846
     },
     {
       "hypothesis": "combined_depth_and_leaf",
@@ -143,8 +143,8 @@
       },
       "mean_iou": 0.837646,
       "std_iou": 0.13111,
-      "train_time_s": 103.117,
-      "inference_time_s": 10.987
+      "train_time_s": 147.015,
+      "inference_time_s": 12.854
     }
   ]
 }

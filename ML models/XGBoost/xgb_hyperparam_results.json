@@ -9,7 +9,7 @@
     "objective": "binary:logistic",
     "eval_metric": "logloss",
     "tree_method": "hist",
-    "random_state": 42
+    "seed": 42
   },
   "best_iou": 0.842086,
   "rationale": "Reduce overfitting and noisy boundaries.",
@@ -27,7 +27,7 @@
         "objective": "binary:logistic",
         "eval_metric": "logloss",
         "tree_method": "hist",
-        "random_state": 42
+        "seed": 42
       },
       "mean_iou": 0.840153,
       "std_iou": 0.129298,
@@ -46,7 +46,7 @@
         "objective": "binary:logistic",
         "eval_metric": "logloss",
         "tree_method": "hist",
-        "random_state": 42
+        "seed": 42
       },
       "mean_iou": 0.842086,
       "std_iou": 0.128141,
@@ -65,7 +65,7 @@
         "objective": "binary:logistic",
         "eval_metric": "logloss",
         "tree_method": "hist",
-        "random_state": 42
+        "seed": 42
       },
       "mean_iou": 0.839512,
       "std_iou": 0.130181,
@@ -84,7 +84,7 @@
         "objective": "binary:logistic",
         "eval_metric": "logloss",
         "tree_method": "hist",
-        "random_state": 42
+        "seed": 42
       },
       "mean_iou": 0.839744,
       "std_iou": 0.129451,
