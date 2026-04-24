@@ -1,7 +1,5 @@
 """
 train_utils.py
-
-Shared training utilities for model_rf.ipynb and hyperparam_rf.ipynb.
 Handles file discovery, trial running, and result saving.
 """
 
@@ -10,13 +8,11 @@ import time
 import numpy as np
 from pathlib import Path
 from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
 from typing import List, Tuple
 
 from features import extract_features, load_image_mask_pair, build_training_table
 from eval_utils import evaluate, reshape_mask, morphological_cleanup
-
-
-
 
 
 def get_image_mask_pairs(directory: Path) -> Tuple[List[Path], List[Path]]:
@@ -33,7 +29,6 @@ def get_image_mask_pairs(directory: Path) -> Tuple[List[Path], List[Path]]:
 
 
 # Dataset builder
-
 def build_train_val_tables(
     train_dir: Path,
     val_dir: Path,
@@ -58,18 +53,22 @@ def build_train_val_tables(
 
 
 # Trial runner
-
-
 def run_trial(
     params: dict,
     X_train: np.ndarray,
     y_train: np.ndarray,
     val_img_paths: List[Path],
     val_mask_paths: List[Path],
+    model_type: str = "rf", 
     apply_cleanup: bool = True,
 ) -> dict:
     
-    model = RandomForestClassifier(**params, n_jobs=-1, random_state=42)
+    if model_type == "rf":
+        model = RandomForestClassifier(**params, n_jobs=-1, random_state=42)
+    elif model_type == "xgb":
+        model = XGBClassifier(**params, n_jobs=-1)
+    else:
+        raise ValueError(f"Unknown model_type: {model_type}. Use 'rf' or 'xgb'.")
 
     t0 = time.time()
     model.fit(X_train, y_train)
@@ -89,6 +88,7 @@ def run_trial(
     inference_time = time.time() - t1
 
     return {
+        "model_type":       model_type,
         "mean_iou":         round(float(np.mean(ious)), 6),
         "std_iou":          round(float(np.std(ious)), 6),
         "train_time_s":     round(train_time, 3),
@@ -96,10 +96,7 @@ def run_trial(
     }
 
 
-
 # Results saver
-
-
 def save_hyperparam_results(all_results: list, output_path: str = "rf_hyperparam_results.json") -> dict:
    
     best = max(all_results, key=lambda x: x["mean_iou"])
@@ -123,8 +120,6 @@ def save_hyperparam_results(all_results: list, output_path: str = "rf_hyperparam
 
 
 # Params loader (used by model_rf.ipynb)
-
-
 def load_best_params(json_path: str = "rf_hyperparam_results.json") -> dict:
     
     with open(json_path) as f:

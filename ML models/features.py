@@ -16,7 +16,6 @@ FEATURE_NAMES = [
 
 # Vegetation indices
 
- 
 def compute_ExG(img_rgb: np.ndarray) -> np.ndarray:
    
     img = img_rgb.astype(np.float32) / 255.0
@@ -33,7 +32,6 @@ def compute_NDI(img_rgb: np.ndarray) -> np.ndarray:
 
 # Texture
 
- 
 def compute_LBP(gray: np.ndarray, radius: int = 1, n_points: int = 8) -> np.ndarray:
 
     lbp = local_binary_pattern(gray, n_points, radius, method="uniform")
@@ -55,7 +53,6 @@ def compute_Sobel(gray: np.ndarray) -> np.ndarray:
  
 #  Extract a 13-dimensional feature vector for every pixel in an RGB image.
 
- 
 def extract_features(img_rgb: np.ndarray) -> np.ndarray:
    
     H, W = img_rgb.shape[:2]
@@ -74,7 +71,6 @@ def extract_features(img_rgb: np.ndarray) -> np.ndarray:
     lbp = compute_LBP(gray)     
     sobel = compute_Sobel(gray) 
  
-    #  Stack into (H*W, 13) 
     features = np.column_stack([
         img_rgb[:, :, 0].reshape(N),   
         img_rgb[:, :, 1].reshape(N),    
@@ -96,10 +92,7 @@ def extract_features(img_rgb: np.ndarray) -> np.ndarray:
  
 
 # Sample an equal number of wheat (1) and soil (0) pixels from one image.
-# Stratification prevents class imbalance from dominating the training table.
- 
 
- 
 def sample_pixels_stratified(
     img_rgb: np.ndarray,
     mask: np.ndarray,
@@ -135,7 +128,6 @@ def sample_pixels_stratified(
 
 # Dataset loader
 
- 
 def load_image_mask_pair(
     img_path: Union[str, Path, None],
     mask_path: Union[str, Path,None],
