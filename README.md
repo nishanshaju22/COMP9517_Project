@@ -2,7 +2,7 @@
 
 To setup this project:
 Download the EWS_DATASET from the following link: https://www.research-collection.ethz.ch/entities/researchdata/165d22fc-6b0f-4fc3-a441-20d8bdc50a70
-Extract the ZIP file into a folder called "EWS-Dataset" and move this folder into the root folder of the project (same folder as this README)
+Create a new folder called "Data"  on the  root folder of the project (same folder as this README) and extract the ZIP file into a folder called "EWS-Dataset" in that "Data" folder.
 
 To run the code, startup jupyter notebook and access the notebooks in the corresponding folder:
 AdvancedSegmentation: watershed.ipynb, felzenszwalb.ipynb
